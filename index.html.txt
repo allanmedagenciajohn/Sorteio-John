@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roleta de Sorteio Profissional</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #f0f2f5; margin: 0; padding: 20px; }
+        .container { display: flex; gap: 40px; max-width: 1000px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .canvas-container { position: relative; }
+        #canvas { border: 5px solid #333; border-radius: 50%; background: white; }
+        .seta { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 30px solid #e74c3c; z-index: 10; }
+        .controles { display: flex; flex-direction: column; gap: 15px; width: 300px; }
+        textarea { height: 200px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; resize: none; font-size: 16px; }
+        button { padding: 15px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #219150; }
+        .info { font-size: 14px; color: #666; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <h1>Roleta de Sorteios</h1>
+
+    <div class="container">
+        <div class="canvas-container">
+            <div class="seta"></div>
+            <canvas id="canvas" width="500" height="500"></canvas>
+        </div>
+
+        <div class="controles">
+            <label><strong>Opções (uma por linha):</strong></label>
+            <textarea id="opcoes" placeholder="Digite as opções aqui...">Opção 1
+Opção 2
+Opção 3
+Opção 4</textarea>
+            
+            <button id="btnSortear">SORTEAR (Enter)</button>
+            <p class="info">Pressione <strong>Enter</strong> no teclado para girar!</p>
+            <h2 id="resultado" style="text-align:center; color: #2ecc71;"></h2>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const btnSortear = document.getElementById('btnSortear');
+        const txtOpcoes = document.getElementById('opcoes');
+        const resText = document.getElementById('resultado');
+
+        let opcoes = [];
+        let anguloAtual = 0;
+        let girando = false;
+
+        function desenharRoleta() {
+            opcoes = txtOpcoes.value.split('\n').filter(t => t.trim() !== "");
+            if (opcoes.length === 0) return;
+
+            const sliceAngle = (2 * Math.PI) / opcoes.length;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            opcoes.forEach((texto, i) => {
+                const angulo = i * sliceAngle;
+                
+                // Cores alternadas
+                ctx.fillStyle = `hsl(${(i * 360 / opcoes.length)}, 70%, 60%)`;
+                
+                ctx.beginPath();
+                ctx.moveTo(250, 250);
+                ctx.arc(250, 250, 240, angulo, angulo + sliceAngle);
+                ctx.lineTo(250, 250);
+                ctx.fill();
+                ctx.stroke();
+
+                // Texto
+                ctx.save();
+                ctx.translate(250, 250);
+                ctx.rotate(angulo + sliceAngle / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 18px Arial";
+                ctx.fillText(texto, 230, 10);
+                ctx.restore();
+            });
+        }
+
+        function girar() {
+            if (girando || opcoes.length === 0) return;
+            girando = true;
+            resText.innerText = "Sorteando...";
+
+            const giros Extras = Math.floor(Math.random() * 10) + 10; // Entre 10 e 20 voltas
+            const anguloFinal = anguloAtual + (girosExtras * 2 * Math.PI) + (Math.random() * 2 * Math.PI);
+            
+            const tempoInicio = performance.now();
+            const duracao = 4000; // 4 segundos
+
+            function animar(tempoAtual) {
+                const progresso = (tempoAtual - tempoInicio) / duracao;
+                if (progresso < 1) {
+                    // Ease-out para suavizar o final
+                    const easing = 1 - Math.pow(1 - progresso, 3);
+                    const anguloMomento = anguloAtual + (anguloFinal - anguloAtual) * easing;
+                    
+                    canvas.style.transform = `rotate(${anguloMomento}rad)`;
+                    requestAnimationFrame(animar);
+                } else {
+                    girando = false;
+                    anguloAtual = anguloFinal % (2 * Math.PI);
+                    
+                    // Calcular qual opção caiu na seta (topo)
+                    // A seta está no topo (-90 graus ou -PI/2)
+                    const anguloCorrigido = (1.5 * Math.PI - anguloAtual) % (2 * Math.PI);
+                    const indiceGanhador = Math.floor(((anguloCorrigido < 0 ? anguloCorrigido + 2 * Math.PI : anguloCorrigido) / (2 * Math.PI)) * opcoes.length);
+                    
+                    resText.innerText = "Ganhador: " + opcoes[indiceGanhador];
+                }
+            }
+            requestAnimationFrame(animar);
+        }
+
+        // Eventos
+        txtOpcoes.addEventListener('input', desenharRoleta);
+        btnSortear.addEventListener('click', girar);
+
+        // Atalho Tecla ENTER
+        window.addEventListener('keydown', (e) => {
+            if (e.key === "Enter" && !girando) {
+                // Previne o Enter de pular linha se o foco estiver no textarea
+                if(document.activeElement === txtOpcoes) {
+                    e.preventDefault();
+                }
+                girar();
+            }
+        });
+
+        desenharRoleta();
+    </script>
+</body>
+</html>
