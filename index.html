@@ -5,41 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roleta de Sorteios Pro</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f4f7f6; margin: 0; padding: 20px; }
-        .container { display: flex; gap: 30px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); flex-wrap: wrap; justify-content: center; }
-        .canvas-container { position: relative; width: 500px; height: 500px; }
-        #canvas { border-radius: 50%; border: 10px solid #333; background: #fff; transition: transform 4s cubic-bezier(0.1, 0, 0.2, 1); }
-        .seta { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid #ff4757; z-index: 10; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
+        /* FUNDO PRETO E ESTILO DARK */
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background: #121212; /* Fundo Preto */
+            color: white;
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            display: flex; 
+            gap: 30px; 
+            background: #1e1e1e; /* Fundo do painel lateral */
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5); 
+            flex-wrap: wrap; 
+            justify-content: center; 
+        }
+        .canvas-container { 
+            position: relative; 
+            width: 500px; 
+            height: 500px; 
+        }
+        #canvas { 
+            border-radius: 50%; 
+            border: 10px solid #333; 
+            background: #fff; 
+            transition: transform 5s cubic-bezier(0.1, 0, 0.1, 1); /* Giro mais suave */
+        }
+        /* LOGO NO CENTRO */
+        .centro-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; /* Tamanho da sua logo */
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .centro-logo img {
+            max-width: 100%;
+            height: auto;
+        }
+        .seta { 
+            position: absolute; 
+            top: -20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 0; 
+            height: 0; 
+            border-left: 20px solid transparent; 
+            border-right: 20px solid transparent; 
+            border-top: 40px solid #ff4757; 
+            z-index: 10; 
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); 
+        }
         .controles { width: 320px; display: flex; flex-direction: column; gap: 15px; }
-        textarea { height: 250px; padding: 15px; border-radius: 10px; border: 2px solid #ddd; font-size: 16px; resize: none; outline: none; }
-        textarea:focus { border-color: #27ae60; }
-        button { padding: 20px; background: #27ae60; color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 22px; font-weight: bold; box-shadow: 0 5px 0 #1e8449; }
+        textarea { 
+            height: 250px; 
+            padding: 15px; 
+            border-radius: 10px; 
+            border: 2px solid #333; 
+            background: #2d2d2d;
+            color: white;
+            font-size: 16px; 
+            outline: none; 
+        }
+        button { 
+            padding: 20px; 
+            background: #27ae60; 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 22px; 
+            font-weight: bold; 
+            box-shadow: 0 5px 0 #1e8449; 
+        }
         button:active { transform: translateY(3px); box-shadow: 0 2px 0 #1e8449; }
-        #resultado { font-size: 28px; font-weight: bold; color: #2f3542; text-align: center; margin-top: 15px; min-height: 40px; }
-        .hint { font-size: 14px; color: #7f8c8d; text-align: center; }
+        #resultado { 
+            font-size: 32px; 
+            font-weight: bold; 
+            color: #2ecc71; 
+            text-align: center; 
+            margin-top: 15px; 
+            min-height: 45px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
 
-    <h1 style="margin-bottom: 30px; color: #2f3542;">🎡 Roleta de Prêmios</h1>
+    <h1 style="margin-bottom: 30px;">🎡 Roleta de Prêmios</h1>
 
     <div class="container">
         <div class="canvas-container">
             <div class="seta"></div>
+            <div class="centro-logo">
+                <img src="https://via.placeholder.com/80" id="minhaLogo" alt="Logo">
+            </div>
             <canvas id="canvas" width="500" height="500"></canvas>
         </div>
 
         <div class="controles">
             <label><b>Opções (uma por linha):</b></label>
-            <textarea id="opcoes">Pizza
-Vale Brinde
-Pix R$ 50
-Agradecemos
-Tente Novamente
-Combo Especial</textarea>
+            <textarea id="opcoes">Opção 1
+Opção 2
+Opção 3
+Opção 4
+Opção 5
+Opção 6</textarea>
             
             <button id="btnSortear">SORTEAR (Enter)</button>
-            <p class="hint">Dica: Clique fora da caixa de texto e aperte <b>Enter</b>!</p>
             <div id="resultado"></div>
         </div>
     </div>
@@ -52,6 +140,7 @@ Combo Especial</textarea>
         const resText = document.getElementById('resultado');
 
         let opcoes = [];
+        let anguloAtual = 0;
         let girando = false;
 
         function desenharRoleta() {
@@ -65,18 +154,16 @@ Combo Especial</textarea>
             opcoes.forEach((texto, i) => {
                 const anguloInicio = i * anguloFatia;
                 
-                // Cores vibrantes
-                ctx.fillStyle = `hsl(${(i * 360 / qtd)}, 75%, 55%)`;
+                ctx.fillStyle = `hsl(${(i * 360 / qtd)}, 70%, 50%)`;
                 ctx.beginPath();
                 ctx.moveTo(250, 250);
-                ctx.arc(250, 250, 240, anguloInicio, anguloInicio + anguloFatia);
+                ctx.arc(250, 250, 245, anguloInicio, anguloInicio + anguloFatia);
                 ctx.lineTo(250, 250);
                 ctx.fill();
-                ctx.strokeStyle = "#fff";
-                ctx.lineWidth = 3;
+                ctx.strokeStyle = "rgba(255,255,255,0.2)";
+                ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Texto nas fatias
                 ctx.save();
                 ctx.translate(250, 250);
                 ctx.rotate(anguloInicio + anguloFatia / 2);
@@ -91,25 +178,37 @@ Combo Especial</textarea>
         function iniciarSorteio() {
             if (girando || opcoes.length < 2) return;
             girando = true;
-            resText.innerText = "Sorteando...";
+            resText.innerText = "Girando...";
 
-            const voltasExtras = Math.floor(Math.random() * 10) + 10; // 10 a 20 voltas
-            const sorteioGraus = Math.floor(Math.random() * 360);
-            const totalRotacao = (voltasExtras * 360) + sorteioGraus;
+            const tempoAnimacao = 5000; // 5 segundos
+            const voltasExtras = 8 + Math.random() * 5; 
+            const sorteioAleatorio = Math.random() * 360;
+            const totalRotacaoDeg = (voltasExtras * 360) + sorteioAleatorio;
             
-            canvas.style.transform = `rotate(${totalRotacao}deg)`;
+            // Aplica a rotação
+            canvas.style.transform = `rotate(${totalRotacaoDeg}deg)`;
 
             setTimeout(() => {
                 girando = false;
-                // Cálculo para saber qual fatia parou no topo
+                
+                // CÁLCULO DE PRECISÃO:
+                // O ângulo que para na seta (topo = 270°)
+                const anguloFinalEfetivo = (totalRotacaoDeg % 360);
                 const fatiaGraus = 360 / opcoes.length;
-                const indiceVencedor = Math.floor(((360 - (sorteioGraus - 90)) % 360) / fatiaGraus);
-                const vencedor = opcoes[indiceVencedor < 0 ? indiceVencedor + opcoes.length : indiceVencedor];
+                
+                // Ajuste para encontrar o índice correto baseado no topo (270 deg)
+                let indiceVencedor = Math.floor(((360 - (anguloFinalEfetivo - 90)) % 360) / fatiaGraus);
+                
+                if (indiceVencedor < 0) indiceVencedor += opcoes.length;
+                
+                const vencedor = opcoes[indiceVencedor];
                 resText.innerText = "🏆 " + vencedor;
-            }, 4000); // Tempo da animação no CSS
+                
+                // Reiniciar ângulo para não dar saltos na próxima vez
+                anguloAtual = totalRotacaoDeg % 360;
+            }, tempoAnimacao);
         }
 
-        // Eventos
         txtOpcoes.addEventListener('input', desenharRoleta);
         btnSortear.addEventListener('click', iniciarSorteio);
 
@@ -121,7 +220,7 @@ Combo Especial</textarea>
             }
         });
 
-        // Desenha a roleta assim que carrega
+        window.onload = desenharRoleta;
         desenharRoleta();
     </script>
 </body>
