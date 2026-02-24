@@ -107,8 +107,8 @@ Energético
         </div>
     </div>
 
-    <audio id="somGiro" src="https://assets.mixkit.co/active_storage/sfx/2012/2012-preview.mp3" preload="auto"></audio>
-    <audio id="somVitoria" src="https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3" preload="auto"></audio>
+    <audio id="somGiro" src="https://www.soundjay.com/misc/sounds/wheel-fortune-1.mp3" preload="auto"></audio>
+    <audio id="somVitoria" src="https://www.myinstants.com/media/sounds/tada.mp3" preload="auto"></audio>
 
     <script>
         const canvas = document.getElementById('canvas');
@@ -171,9 +171,9 @@ Energético
             girando = true;
             resText.innerHTML = "<span style='color:#555'>SORTEANDO...</span>";
 
-            // Tocar som de giro (em loop até parar)
+            // Tocar som de giro (catraca)
             somGiro.currentTime = 0;
-            somGiro.loop = true;
+            somGiro.volume = 0.5;
             somGiro.play();
 
             const indiceSorteado = Math.floor(getTrueRandom() * itens.length);
@@ -191,7 +191,7 @@ Energético
             setTimeout(() => {
                 girando = false;
                 
-                // Parar som de giro e tocar vitória
+                // Parar som de giro e tocar vitória (Ta-da!)
                 somGiro.pause();
                 somVitoria.currentTime = 0;
                 somVitoria.play();
