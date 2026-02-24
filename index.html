@@ -107,7 +107,7 @@ Energético
         </div>
     </div>
 
-    <audio id="somGiro" src="https://www.soundjay.com/misc/sounds/wheel-fortune-1.mp3" preload="auto"></audio>
+    <audio id="somGiro" src="https://cdn.pixabay.com/audio/2022/03/15/audio_78396002a7.mp3" preload="auto"></audio>
     <audio id="somVitoria" src="https://www.myinstants.com/media/sounds/tada.mp3" preload="auto"></audio>
 
     <script>
@@ -171,10 +171,10 @@ Energético
             girando = true;
             resText.innerHTML = "<span style='color:#555'>SORTEANDO...</span>";
 
-            // Tocar som de giro (catraca)
+            // TENTATIVA DE TOCAR O SOM (O navegador exige interação do usuário)
             somGiro.currentTime = 0;
-            somGiro.volume = 0.5;
-            somGiro.play();
+            somGiro.loop = true;
+            somGiro.play().catch(e => console.log("Aguardando clique para liberar som"));
 
             const indiceSorteado = Math.floor(getTrueRandom() * itens.length);
             const grausFatia = 360 / itens.length;
@@ -190,8 +190,6 @@ Energético
 
             setTimeout(() => {
                 girando = false;
-                
-                // Parar som de giro e tocar vitória (Ta-da!)
                 somGiro.pause();
                 somVitoria.currentTime = 0;
                 somVitoria.play();
