@@ -2,24 +2,25 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roleta de Sorteio Profissional</title>
+    <title>Roleta de Sorteios</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #f0f2f5; margin: 0; padding: 20px; }
-        .container { display: flex; gap: 40px; max-width: 1000px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .canvas-container { position: relative; }
-        #canvas { border: 5px solid #333; border-radius: 50%; background: white; }
-        .seta { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 30px solid #e74c3c; z-index: 10; }
-        .controles { display: flex; flex-direction: column; gap: 15px; width: 300px; }
-        textarea { height: 200px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; resize: none; font-size: 16px; }
-        button { padding: 15px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #219150; }
-        .info { font-size: 14px; color: #666; text-align: center; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f0f2f5; margin: 0; padding: 20px; }
+        .container { display: flex; gap: 40px; max-width: 900px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+        .canvas-container { position: relative; width: 500px; height: 500px; }
+        #canvas { background: white; border-radius: 50%; border: 8px solid #333; }
+        .seta { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 30px solid #e74c3c; z-index: 10; }
+        .controles { display: flex; flex-direction: column; gap: 15px; width: 300px; min-width: 250px; }
+        textarea { height: 250px; padding: 15px; border-radius: 10px; border: 2px solid #ddd; font-size: 16px; line-height: 1.5; }
+        button { padding: 18px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 20px; font-weight: bold; transition: transform 0.1s, background 0.3s; box-shadow: 0 4px 0 #1e8449; }
+        button:active { transform: translateY(4px); box-shadow: none; }
+        button:hover { background: #2ecc71; }
+        #resultado { text-align: center; color: #2c3e50; min-height: 40px; font-size: 24px; font-weight: bold; margin-top: 10px; }
+        .instrucao { font-size: 13px; color: #888; text-align: center; }
     </style>
 </head>
 <body>
 
-    <h1>Roleta de Sorteios</h1>
+    <h1 style="color: #1a1a1a;">Roleta de Sorteios</h1>
 
     <div class="container">
         <div class="canvas-container">
@@ -29,14 +30,16 @@
 
         <div class="controles">
             <label><strong>Opções (uma por linha):</strong></label>
-            <textarea id="opcoes" placeholder="Digite as opções aqui...">Opção 1
-Opção 2
-Opção 3
-Opção 4</textarea>
+            <textarea id="opcoes">Pizza
+Vale Ifood
+Pix
+Folga
+Energético
+2x Comissão</textarea>
             
             <button id="btnSortear">SORTEAR (Enter)</button>
-            <p class="info">Pressione <strong>Enter</strong> no teclado para girar!</p>
-            <h2 id="resultado" style="text-align:center; color: #2ecc71;"></h2>
+            <p class="instrucao">Pressione <b>Enter</b> para girar</p>
+            <div id="resultado"></div>
         </div>
     </div>
 
@@ -47,93 +50,89 @@ Opção 4</textarea>
         const txtOpcoes = document.getElementById('opcoes');
         const resText = document.getElementById('resultado');
 
-        let opcoes = [];
         let anguloAtual = 0;
         let girando = false;
 
-        function desenharRoleta() {
-            opcoes = txtOpcoes.value.split('\n').filter(t => t.trim() !== "");
-            if (opcoes.length === 0) return;
+        function desenhar() {
+            const itens = txtOpcoes.value.split('\n').filter(t => t.trim() !== "");
+            const qtd = itens.length;
+            if (qtd === 0) return;
 
-            const sliceAngle = (2 * Math.PI) / opcoes.length;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const slice = (2 * Math.PI) / qtd;
+            ctx.clearRect(0, 0, 500, 500);
 
-            opcoes.forEach((texto, i) => {
-                const angulo = i * sliceAngle;
+            itens.forEach((texto, i) => {
+                const ang = i * slice;
+                ctx.fillStyle = `hsl(${(i * 360 / qtd)}, 70%, 55%)`;
                 
-                // Cores alternadas
-                ctx.fillStyle = `hsl(${(i * 360 / opcoes.length)}, 70%, 60%)`;
-                
+                // Desenha a fatia
                 ctx.beginPath();
                 ctx.moveTo(250, 250);
-                ctx.arc(250, 250, 240, angulo, angulo + sliceAngle);
+                ctx.arc(250, 250, 240, ang, ang + slice);
                 ctx.lineTo(250, 250);
                 ctx.fill();
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Texto
+                // Desenha o texto
                 ctx.save();
                 ctx.translate(250, 250);
-                ctx.rotate(angulo + sliceAngle / 2);
+                ctx.rotate(ang + slice / 2);
                 ctx.textAlign = "right";
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 18px Arial";
-                ctx.fillText(texto, 230, 10);
+                ctx.fillStyle = "white";
+                ctx.font = "bold 16px Arial";
+                ctx.fillText(texto.substring(0, 15), 230, 10);
                 ctx.restore();
             });
         }
 
         function girar() {
-            if (girando || opcoes.length === 0) return;
+            if (girando) return;
+            const itens = txtOpcoes.value.split('\n').filter(t => t.trim() !== "");
+            if (itens.length < 2) return alert("Adicione pelo menos 2 opções!");
+
             girando = true;
             resText.innerText = "Sorteando...";
-
-            const giros Extras = Math.floor(Math.random() * 10) + 10; // Entre 10 e 20 voltas
-            const anguloFinal = anguloAtual + (girosExtras * 2 * Math.PI) + (Math.random() * 2 * Math.PI);
             
-            const tempoInicio = performance.now();
-            const duracao = 4000; // 4 segundos
+            const voltas = 10 + Math.random() * 10;
+            const anguloFinal = anguloAtual + voltas * 2 * Math.PI + Math.random() * 2 * Math.PI;
+            const duracao = 4000;
+            const inicio = performance.now();
 
-            function animar(tempoAtual) {
-                const progresso = (tempoAtual - tempoInicio) / duracao;
+            function animar(agora) {
+                const progresso = (agora - inicio) / duracao;
                 if (progresso < 1) {
-                    // Ease-out para suavizar o final
                     const easing = 1 - Math.pow(1 - progresso, 3);
-                    const anguloMomento = anguloAtual + (anguloFinal - anguloAtual) * easing;
-                    
-                    canvas.style.transform = `rotate(${anguloMomento}rad)`;
+                    const atual = anguloAtual + (anguloFinal - anguloAtual) * easing;
+                    canvas.style.transform = `rotate(${atual}rad)`;
                     requestAnimationFrame(animar);
                 } else {
                     girando = false;
                     anguloAtual = anguloFinal % (2 * Math.PI);
                     
-                    // Calcular qual opção caiu na seta (topo)
-                    // A seta está no topo (-90 graus ou -PI/2)
-                    const anguloCorrigido = (1.5 * Math.PI - anguloAtual) % (2 * Math.PI);
-                    const indiceGanhador = Math.floor(((anguloCorrigido < 0 ? anguloCorrigido + 2 * Math.PI : anguloCorrigido) / (2 * Math.PI)) * opcoes.length);
+                    const slice = (2 * Math.PI) / itens.length;
+                    const realAng = (1.5 * Math.PI - anguloAtual) % (2 * Math.PI);
+                    const indice = Math.floor((realAng < 0 ? realAng + 2 * Math.PI : realAng) / slice);
                     
-                    resText.innerText = "Ganhador: " + opcoes[indiceGanhador];
+                    resText.innerText = "🎉 " + itens[indice];
                 }
             }
             requestAnimationFrame(animar);
         }
 
-        // Eventos
-        txtOpcoes.addEventListener('input', desenharRoleta);
+        txtOpcoes.addEventListener('input', desenhar);
         btnSortear.addEventListener('click', girar);
-
-        // Atalho Tecla ENTER
+        
         window.addEventListener('keydown', (e) => {
             if (e.key === "Enter" && !girando) {
-                // Previne o Enter de pular linha se o foco estiver no textarea
-                if(document.activeElement === txtOpcoes) {
-                    e.preventDefault();
-                }
-                girar();
+                if(document.activeElement !== txtOpcoes) girar();
             }
         });
 
-        desenharRoleta();
+        // Força o desenho inicial
+        window.onload = desenhar;
+        desenhar();
     </script>
 </body>
 </html>
